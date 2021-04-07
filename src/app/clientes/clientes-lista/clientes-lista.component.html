@@ -4,6 +4,16 @@
 </ol>
 
 <div class="container">
+    <div class="row">
+        <div class="cal-md-12">
+            <div class="alert alert-success" role="alert" *ngIf="mensagemSucesso">
+                {{ mensagemSucesso }}
+            </div>
+            <div class="alert alert-danger" role="alert" *ngIf="mensagemErro">
+                {{ mensagemErro }}
+            </div>
+        </div>
+    </div>
 
     <div class="row">
         <div class="cal-md-2">
@@ -33,10 +43,41 @@
                         <td>{{ cliente.nome }}</td>
                         <td>{{ cliente.cpf }}</td>
                         <td>{{ cliente.dataCadastro }}</td>
-                        <td></td>
+                        <td>
+                            <button class="btn btn-primary" routerLink="/clientes/{{ cliente.id }}">
+                                <i class="fa fa-edit"></i>
+                            </button> 
+
+                            <button class="btn btn-danger" (click)="preparaDelecao(cliente)"
+                                    data-toggle="modal" data-target="#modalDelecao" >
+                                <i class="fa fa-trash"></i>
+                            </button>
+
+                        </td>
                     </tr>
                 </tbody>
             </table>      
         </div> 
     </div>
+
+    <div id="modalDelecao" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4>Confirmação</h4>
+                </div>
+
+                <div class="modal-body" *ngIf="clienteSelecionado">
+                    Confirma a deleçao do(a) cliente {{ clienteSelecionado.nome }}?
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-success" (click)="deletarCliente()" data-dismiss="modal" >Sim</button>
+                    <button class="btn btn-default" data-dismiss="modal">Não</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 </div>

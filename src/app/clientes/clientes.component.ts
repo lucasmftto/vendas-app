@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { error } from 'jquery';
 import { ClientesService } from '../clientes.service';
 
@@ -15,29 +15,58 @@ export class ClientesComponent implements OnInit {
   cliente!: Cliente;
   success: boolean = false;
   errors!: String[];
+  parameterValue!: number;
 
   constructor(
     private clienteService: ClientesService ,
-    private router: Router
+    private router: Router,
+    private activatedRoute : ActivatedRoute
     ) {
     this.cliente = new Cliente();
    }
 
   ngOnInit(): void {
-  }
+   
+    this.activatedRoute.params.subscribe(parameter => {
+      let id = +parameter['id'];
+      this.parameterValue = id
+    })
+
+    if(this.parameterValue){
+      this.clienteService
+        .getClienteById(this.parameterValue)
+        .subscribe( 
+          response => this.cliente = response ,
+          errorResponse => this.cliente = new Cliente()
+          )
+    }
+  } 
 
   onSubmit(){
-    this.clienteService
-      .salvar(this.cliente)
-      .subscribe( response => {
-        this.success = true;
-        this.errors = [];
-        this.cliente = response;
-    } , errorResponse => {
-      this.success = false;
-      this.errors = errorResponse.error.errors;
+    if(this.parameterValue){
+      this.clienteService
+        .atualizar(this.cliente)
+        .subscribe(response => {
+          this.success = true;
+          this.errors = [];
+        }, errorResponse => {
+          this.errors = ['Erro ao tentar atualizar o cliente.'];
+        }
+      )
+    }else{
+        this.clienteService
+        .salvar(this.cliente)
+        .subscribe( response => {
+          this.success = true;
+          this.errors = [];
+          this.cliente = response;
+      } , errorResponse => {
+        this.success = false;
+        this.errors = errorResponse.error.errors;
+      }
+      )
     }
-    )
+
   }
 
   voltarParaListagem(){
